@@ -1,0 +1,27 @@
+services:
+  api:
+    type: http
+    url: http://api:5000/health
+    interval: 30
+    timeout: 5
+    retries: 3
+
+  database:
+    type: db
+    host: db
+    port: 5432
+    interval: 60
+    timeout: 10
+
+  dashboard:
+    type: http
+    url: http://dashboard:80
+    interval: 30
+    timeout: 5
+
+  redis:
+    type: tcp
+    host: redis
+    port: 6379
+    interval: 30
+    timeout: 3

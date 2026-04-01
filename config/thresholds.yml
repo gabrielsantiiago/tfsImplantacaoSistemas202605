@@ -1,0 +1,23 @@
+response_time:
+  warning: 1000   # ms
+  critical: 2000  # ms
+
+cpu_usage:
+  warning: 70     # %
+  critical: 90    # %
+
+memory_usage:
+  warning: 75     # %
+  critical: 90    # %
+
+disk_usage:
+  warning: 80     # %
+  critical: 95    # %
+
+error_rate:
+  warning: 5      # %
+  critical: 10    # %
+
+consecutive_failures:
+  warning: 2
+  critical: 3

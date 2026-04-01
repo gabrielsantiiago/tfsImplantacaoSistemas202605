@@ -1,0 +1,28 @@
+channels:
+  webhook:
+    enabled: true
+    url: "${WEBHOOK_URL}"
+    method: POST
+
+  email:
+    enabled: false
+    smtp_host: smtp.gmail.com
+    smtp_port: 587
+    from: alerts@monitor.local
+    to: admin@monitor.local
+
+rules:
+  - name: service_down
+    condition: status == "unhealthy"
+    severity: critical
+    channels: [webhook]
+
+  - name: high_response_time
+    condition: response_time > 2000
+    severity: warning
+    channels: [webhook]
+
+  - name: repeated_failure
+    condition: consecutive_failures >= 3
+    severity: critical
+    channels: [webhook, email]
