@@ -65,6 +65,31 @@ def run_checks():
 def health():
     return jsonify({"status": "healthy", "timestamp": datetime.utcnow().isoformat()})
 
+@app.route("/health/status")
+def health_status():
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT name, last_status, updated_at FROM services ORDER BY name")
+    rows = cur.fetchall()
+    cur.close(); conn.close()
+    return jsonify({"status": "healthy", "services": [dict(r) for r in rows]})
+
+@app.route("/metrics/uptime")
+def metrics_uptime():
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT s.name,
+               ROUND(100.0 * SUM(CASE WHEN h.status='healthy' THEN 1 ELSE 0 END) / COUNT(*), 2) AS uptime_pct
+        FROM services s
+        JOIN health_checks h ON h.service_id = s.id
+        WHERE h.checked_at > NOW() - INTERVAL '24 hours'
+        GROUP BY s.name
+    """)
+    rows = cur.fetchall()
+    cur.close(); conn.close()
+    return jsonify([dict(r) for r in rows])
+
 @app.route("/api/services")
 def services():
     conn = get_db()
@@ -87,6 +112,7 @@ def service_history(service_id):
     cur.close(); conn.close()
     return jsonify([dict(r) for r in rows])
 
+@app.route("/metrics")
 @app.route("/api/metrics")
 def metrics():
     conn = get_db()
@@ -94,6 +120,7 @@ def metrics():
     conn.close()
     return jsonify(rows)
 
+@app.route("/alerts")
 @app.route("/api/alerts")
 def alerts():
     resolved = request.args.get("resolved", "false").lower() == "true"

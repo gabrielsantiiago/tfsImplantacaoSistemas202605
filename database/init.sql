@@ -3,6 +3,8 @@ CREATE TABLE IF NOT EXISTS services (
     name VARCHAR(100) UNIQUE NOT NULL,
     type VARCHAR(20) NOT NULL,
     target VARCHAR(255) NOT NULL,
+    last_status VARCHAR(20) DEFAULT 'unknown',
+    updated_at TIMESTAMP DEFAULT NOW(),
     created_at TIMESTAMP DEFAULT NOW()
 );
 
